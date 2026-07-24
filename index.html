@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="LifeOS: hábitos, rachas, XP, estadísticas y objetivos. Funciona sin conexión." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>LifeOS</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">L</div>
+        <div>
+          <strong>LifeOS</strong>
+          <small>Tu sistema personal</small>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span> Inicio</button>
+        <button class="nav-item" data-view="habits"><span>✓</span> Hábitos</button>
+        <button class="nav-item" data-view="stats"><span>↗</span> Estadísticas</button>
+        <button class="nav-item" data-view="achievements"><span>★</span> Logros</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> Configuración</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="storage-badge">
+          <span class="status-dot"></span>
+          Datos guardados en este dispositivo
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Abrir menú">☰</button>
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1 id="viewTitle">Buenos días</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="themeBtn" title="Cambiar tema">◐</button>
+          <button class="avatar" id="profileBtn">R</button>
+        </div>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="hero card">
+          <div>
+            <span class="pill">LIFE OS · PERSONAL</span>
+            <h2 id="greetingTitle">Construí tu mejor día.</h2>
+            <p>Marcá tus hábitos, acumulá experiencia y mantené tu racha.</p>
+          </div>
+          <div class="level-card">
+            <div class="level-number" id="levelNumber">1</div>
+            <div>
+              <strong id="levelText">Nivel 1</strong>
+              <small id="xpText">0 / 250 XP</small>
+              <div class="progress"><span id="xpBar"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi card"><span class="kpi-icon">◎</span><div><small>Cumplimiento hoy</small><strong id="todayCompletion">0%</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">🔥</span><div><small>Racha actual</small><strong id="currentStreak">0 días</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">🏆</span><div><small>Mejor racha</small><strong id="bestStreak">0 días</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">✦</span><div><small>Días perfectos</small><strong id="perfectDays">0</strong></div></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="card today-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">HOY</p>
+                <h3>Tus hábitos</h3>
+              </div>
+              <button class="btn ghost" data-go="habits">Administrar</button>
+            </div>
+            <div id="todayHabits" class="habit-list"></div>
+            <div class="empty-state hidden" id="emptyToday">
+              <div class="empty-icon">＋</div>
+              <h3>Creá tu primer hábito</h3>
+              <p>Podés empezar con leer, entrenar, meditar o tomar agua.</p>
+              <button class="btn primary" data-go="habits">Agregar hábito</button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">ÚLTIMOS 7 DÍAS</p>
+                <h3>Consistencia</h3>
+              </div>
+              <strong id="weekAverage">0%</strong>
+            </div>
+            <div class="week-chart" id="weekChart"></div>
+          </section>
+        </div>
+
+        <section class="card heatmap-card">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">AÑO ACTUAL</p>
+              <h3>Mapa de constancia</h3>
+            </div>
+            <div class="legend"><span>Menos</span><i></i><i></i><i></i><i></i><span>Más</span></div>
+          </div>
+          <div class="heatmap-scroll"><div class="heatmap" id="heatmap"></div></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-habits">
+        <div class="section-head page-head">
+          <div><p class="eyebrow">GESTIÓN</p><h2>Hábitos</h2><p>Creá, editá y organizá tus rutinas.</p></div>
+          <button class="btn primary" id="addHabitBtn">＋ Nuevo hábito</button>
+        </div>
+
+        <div class="card habits-manager">
+          <div class="habit-manager-head">
+            <span>Hábito</span><span>Frecuencia</span><span>Meta</span><span>XP</span><span>Estado</span><span></span>
+          </div>
+          <div id="habitsManager"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-stats">
+        <div class="section-head page-head">
+          <div><p class="eyebrow">ANÁLISIS</p><h2>Estadísticas</h2><p>Visualizá tu progreso y detectá patrones.</p></div>
+          <select id="statsRange" class="select">
+            <option value="7">Últimos 7 días</option>
+            <option value="30" selected>Últimos 30 días</option>
+            <option value="90">Últimos 90 días</option>
+            <option value="365">Este año</option>
+          </select>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi card"><span class="kpi-icon">％</span><div><small>Promedio</small><strong id="statsAverage">0%</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">✓</span><div><small>Completados</small><strong id="statsCompleted">0</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">↻</span><div><small>Registros</small><strong id="statsEntries">0</strong></div></article>
+          <article class="kpi card"><span class="kpi-icon">⚡</span><div><small>XP ganado</small><strong id="statsXP">0</strong></div></article>
+        </div>
+
+        <div class="stats-grid">
+          <section class="card">
+            <div class="section-head"><div><p class="eyebrow">TENDENCIA</p><h3>Progreso diario</h3></div></div>
+            <canvas id="trendCanvas" width="800" height="320"></canvas>
+          </section>
+          <section class="card">
+            <div class="section-head"><div><p class="eyebrow">RANKING</p><h3>Por hábito</h3></div></div>
+            <div id="habitRanking" class="ranking"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-achievements">
+        <div class="section-head page-head">
+          <div><p class="eyebrow">GAMIFICACIÓN</p><h2>Logros</h2><p>Desbloqueá insignias a medida que avanzás.</p></div>
+        </div>
+        <div id="achievementsGrid" class="achievement-grid"></div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="section-head page-head">
+          <div><p class="eyebrow">PREFERENCIAS</p><h2>Configuración</h2><p>Tu información queda almacenada localmente.</p></div>
+        </div>
+
+        <div class="settings-grid">
+          <section class="card settings-card">
+            <h3>Perfil</h3>
+            <label>Tu nombre<input id="nameInput" class="input" type="text" placeholder="Rafael" maxlength="30" /></label>
+            <label>Objetivo diario
+              <select id="dailyGoalInput" class="select">
+                <option value="0.5">50%</option><option value="0.6">60%</option><option value="0.7">70%</option>
+                <option value="0.8">80%</option><option value="0.85">85%</option><option value="0.9">90%</option><option value="1">100%</option>
+              </select>
+            </label>
+            <button class="btn primary" id="saveSettingsBtn">Guardar cambios</button>
+          </section>
+
+          <section class="card settings-card">
+            <h3>Respaldo de datos</h3>
+            <p>Exportá una copia para no perder tu progreso al cambiar de dispositivo.</p>
+            <div class="stack">
+              <button class="btn secondary" id="exportBtn">Exportar copia JSON</button>
+              <label class="btn ghost file-label">Importar copia<input id="importInput" type="file" accept=".json,application/json" hidden /></label>
+            </div>
+          </section>
+
+          <section class="card settings-card danger-zone">
+            <h3>Zona de peligro</h3>
+            <p>Esta acción elimina hábitos, registros, XP y estadísticas guardadas en este dispositivo.</p>
+            <button class="btn danger" id="resetBtn">Borrar todos los datos</button>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="habitDialog">
+    <form method="dialog" id="habitForm">
+      <div class="modal-head"><div><p class="eyebrow">CONFIGURAR</p><h3 id="habitModalTitle">Nuevo hábito</h3></div><button class="icon-btn" value="cancel">×</button></div>
+      <input type="hidden" id="habitId" />
+      <label>Nombre<input id="habitName" class="input" required maxlength="40" placeholder="Ej. Leer 20 minutos" /></label>
+      <div class="form-grid">
+        <label>Icono<input id="habitIcon" class="input" maxlength="4" value="✓" /></label>
+        <label>Color<input id="habitColor" class="input color-input" type="color" value="#2563eb" /></label>
+      </div>
+      <div class="form-grid">
+        <label>Frecuencia
+          <select id="habitFrequency" class="select">
+            <option value="daily">Todos los días</option>
+            <option value="weekdays">Lunes a viernes</option>
+            <option value="weekends">Fines de semana</option>
+            <option value="custom">Días personalizados</option>
+          </select>
+        </label>
+        <label>XP al completar<input id="habitXP" class="input" type="number" min="1" max="100" value="10" /></label>
+      </div>
+      <div id="customDays" class="custom-days hidden">
+        <span>Días activos</span>
+        <div>
+          <label><input type="checkbox" value="1">L</label><label><input type="checkbox" value="2">M</label>
+          <label><input type="checkbox" value="3">X</label><label><input type="checkbox" value="4">J</label>
+          <label><input type="checkbox" value="5">V</label><label><input type="checkbox" value="6">S</label>
+          <label><input type="checkbox" value="0">D</label>
+        </div>
+      </div>
+      <label>Meta mensual<input id="habitMonthlyGoal" class="input" type="number" min="1" max="31" value="20" /></label>
+      <label class="switch-row"><span>Hábito activo</span><input id="habitActive" type="checkbox" checked /></label>
+      <div class="modal-actions"><button class="btn ghost" value="cancel">Cancelar</button><button class="btn primary" id="saveHabitBtn" value="default">Guardar hábito</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
