@@ -1,14 +1,11 @@
-# LifeOS 3.1 — Gym Notebook
+# LifeOS 3.2 — Finanzas editables
 
-Nueva sección de gimnasio:
-- Rutinas predeterminadas de 3, 4 y 5 días.
-- Creación de rutinas personalizadas.
-- Agregar, eliminar y renombrar días.
-- Agregar o eliminar ejercicios.
-- Editar nombre, cantidad de series y repeticiones objetivo.
-- Registrar peso y repeticiones reales por serie.
-- Marcar series completadas.
-- Cálculo de volumen y duración.
-- Historial de sesiones guardado en el navegador.
+Cambios:
+- Todos los movimientos pueden editarse y eliminarse.
+- Los movimientos predeterminados ya no están bloqueados.
+- Formulario para ingresos y gastos.
+- Categorías financieras.
+- Los movimientos quedan guardados en localStorage.
+- Se mantienen las mejoras del cuaderno de gimnasio.
 
-Para actualizar GitHub Pages, subí `index.html` y reemplazá el anterior.
+Subí `index.html` a la raíz del repositorio y reemplazá el anterior.

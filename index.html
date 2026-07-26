@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07111f">
-  <title>LifeOS 3.1 · Gym Notebook</title>
+  <title>LifeOS 3.2 · Finanzas editables</title>
   <style>
     :root{
       --bg:#07111f;--panel:#0d1929;--panel2:#122135;--panel3:#172a42;--line:#20334d;
@@ -75,6 +75,18 @@
       .set-table{font-size:12px}
     }
 
+
+    .transaction-actions{display:flex;gap:7px}
+    .transaction-action{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+    .transaction-action:hover{color:white}
+    .transaction-action.delete:hover{color:#fca5a5;border-color:rgba(239,68,68,.5)}
+    .finance-form{display:none;margin-top:16px;padding:16px;background:var(--panel2);border:1px solid var(--line);border-radius:16px}
+    .finance-form.open{display:grid}
+    .finance-form-grid{display:grid;grid-template-columns:1.2fr .7fr .7fr .7fr;gap:10px}
+    .finance-form label{display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+    .finance-form input,.finance-form select{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:10px}
+    @media(max-width:680px){.finance-form-grid{grid-template-columns:1fr 1fr}.finance-form-grid label:first-child{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
@@ -103,7 +115,7 @@
 
     <section class="view active" id="view-home">
       <div class="hero">
-        <div><span class="badge">LIFEOS 3.1</span><h2>Construí tu mejor versión.</h2><p>Un solo lugar para tus hábitos, entrenamiento y finanzas.</p></div>
+        <div><span class="badge">LIFEOS 3.2</span><h2>Construí tu mejor versión.</h2><p>Un solo lugar para tus hábitos, entrenamiento y finanzas.</p></div>
         <div class="xp-card"><div class="level">7</div><div style="flex:1"><strong>Nivel 7 · En progreso</strong><small>850 / 1.500 XP</small><div class="progress"><span></span></div></div></div>
       </div>
       <div class="grid-4">
@@ -205,6 +217,15 @@
 
     <section class="view" id="view-finance">
       <div class="page-head"><div><p class="eyebrow">DINERO</p><h2>Finanzas personales</h2><p>Controlá gastos, ingresos y presupuesto.</p></div><button class="btn blue" id="addTransaction">＋ Movimiento</button></div>
+      <section class="finance-form" id="financeForm">
+        <div class="finance-form-grid">
+          <label>Descripción<input id="financeDescription" placeholder="Ej. Supermercado"></label>
+          <label>Monto<input id="financeAmount" type="number" min="0" step="0.01" placeholder="0"></label>
+          <label>Tipo<select id="financeType"><option value="expense">Gasto</option><option value="income">Ingreso</option></select></label>
+          <label>Categoría<select id="financeCategory"><option>Alimentación</option><option>Transporte</option><option>Ocio</option><option>Hogar</option><option>Salud</option><option>Ingresos</option><option>Otros</option></select></label>
+        </div>
+        <div class="gym-toolbar"><button class="btn primary" id="saveTransaction">Guardar</button><button class="btn ghost" id="cancelTransaction">Cancelar</button></div>
+      </section>
       <div class="finance-top">
         <article class="kpi"><span class="kpi-icon">↑</span><div><small>Ingresos</small><strong class="income">$28.500</strong></div></article>
         <article class="kpi"><span class="kpi-icon">↓</span><div><small>Gastos</small><strong class="expense">$16.050</strong></div></article>
@@ -225,11 +246,7 @@
           <div class="analysis-item"><strong>📈 Tasa de ahorro</strong><p>Ahorraste aproximadamente el 44% de tus ingresos.</p></div>
         </div></section>
       </div>
-      <section class="card" style="margin-top:18px"><div class="section-head"><div><p class="eyebrow">MOVIMIENTOS</p><h3>Últimos registros</h3></div></div><div class="transaction-list" id="transactionList">
-        <div class="transaction"><span class="transaction-icon">🛒</span><div><strong>Supermercado</strong><small>Alimentación · Hoy</small></div><span class="expense">−$18.500</span></div>
-        <div class="transaction"><span class="transaction-icon">💼</span><div><strong>Sueldo</strong><small>Ingresos · 20 Jul</small></div><span class="income">+$28.500</span></div>
-        <div class="transaction"><span class="transaction-icon">🚕</span><div><strong>Transporte</strong><small>Transporte · 18 Jul</small></div><span class="expense">−$3.220</span></div>
-      </div></section>
+      <section class="card" style="margin-top:18px"><div class="section-head"><div><p class="eyebrow">MOVIMIENTOS</p><h3>Últimos registros</h3></div></div><div class="transaction-list" id="transactionList"></div></section>
     </section>
 
     <section class="view" id="view-stats">
@@ -527,9 +544,96 @@ function updateTimer(){$("#timerTime").textContent=`00:${String(timerSeconds).pa
 function toggleTimer(){if(running){clearInterval(timerId);running=false;updateTimer();return}running=true;timerId=setInterval(()=>{timerSeconds--;if(timerSeconds<0){if(timerPhase==="work"){timerPhase="rest";timerSeconds=activeHiit.rest}else{timerRound++;if(timerRound>activeHiit.rounds){clearInterval(timerId);running=false;timerSeconds=0;toast("HIIT completado · +40 XP");updateTimer();return}timerPhase="work";timerSeconds=activeHiit.work}}updateTimer()},1000);updateTimer()}
 function resetTimer(){if(timerId)clearInterval(timerId);running=false;timerPhase="work";timerRound=1;timerSeconds=activeHiit.work;updateTimer()}
 $("#toggleTimer").onclick=toggleTimer;$("#resetTimer").onclick=resetTimer;
-$("#addTransaction").onclick=()=>{const text=prompt("Descripción del movimiento:");if(!text)return;const amount=prompt("Monto:");if(!amount)return;const row=document.createElement("div");row.className="transaction";row.innerHTML=`<span class="transaction-icon">💳</span><div><strong>${text}</strong><small>Nuevo movimiento · Hoy</small></div><span class="expense">−$${Number(amount).toLocaleString("es-AR")}</span>`;$("#transactionList").prepend(row);toast("Movimiento agregado")}
+
+const FINANCE_STORAGE_KEY="lifeos_finance_v1";
+let financeEditingId=null;
+let financeTransactions=loadFinanceTransactions();
+
+function loadFinanceTransactions(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(FINANCE_STORAGE_KEY));
+    if(Array.isArray(saved))return saved;
+  }catch(e){}
+  return [
+    {id:1,description:"Supermercado",amount:18500,type:"expense",category:"Alimentación",date:new Date().toISOString()},
+    {id:2,description:"Sueldo",amount:28500,type:"income",category:"Ingresos",date:new Date(Date.now()-3*86400000).toISOString()},
+    {id:3,description:"Transporte",amount:3220,type:"expense",category:"Transporte",date:new Date(Date.now()-5*86400000).toISOString()}
+  ];
+}
+function saveFinanceTransactions(){
+  localStorage.setItem(FINANCE_STORAGE_KEY,JSON.stringify(financeTransactions));
+}
+function financeIcon(category){
+  return ({Alimentación:"🛒",Transporte:"🚕",Ocio:"🎮",Hogar:"🏠",Salud:"🩺",Ingresos:"💼",Otros:"💳"})[category]||"💳";
+}
+function renderTransactions(){
+  const root=$("#transactionList");
+  root.innerHTML="";
+  if(!financeTransactions.length){
+    root.innerHTML='<div class="editor-empty">No hay movimientos. Agregá el primero.</div>';
+    return;
+  }
+  [...financeTransactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(t=>{
+    const row=document.createElement("div");
+    row.className="transaction";
+    const sign=t.type==="income"?"+":"−";
+    row.innerHTML=`
+      <span class="transaction-icon">${financeIcon(t.category)}</span>
+      <div><strong>${escapeHtml(t.description)}</strong><small>${escapeHtml(t.category)} · ${new Date(t.date).toLocaleDateString("es-AR")}</small></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="${t.type==="income"?"income":"expense"}">${sign}$${Number(t.amount).toLocaleString("es-AR")}</span>
+        <div class="transaction-actions">
+          <button class="transaction-action edit" title="Editar">✎</button>
+          <button class="transaction-action delete" title="Eliminar">×</button>
+        </div>
+      </div>`;
+    row.querySelector(".edit").onclick=()=>openFinanceForm(t);
+    row.querySelector(".delete").onclick=()=>{
+      if(confirm(`¿Eliminar "${t.description}"?`)){
+        financeTransactions=financeTransactions.filter(x=>x.id!==t.id);
+        saveFinanceTransactions();renderTransactions();toast("Movimiento eliminado")
+      }
+    };
+    root.appendChild(row);
+  });
+}
+function openFinanceForm(transaction=null){
+  financeEditingId=transaction?.id??null;
+  $("#financeDescription").value=transaction?.description??"";
+  $("#financeAmount").value=transaction?.amount??"";
+  $("#financeType").value=transaction?.type??"expense";
+  $("#financeCategory").value=transaction?.category??"Alimentación";
+  $("#financeForm").classList.add("open");
+  $("#financeDescription").focus();
+}
+function closeFinanceForm(){
+  financeEditingId=null;
+  $("#financeForm").classList.remove("open");
+}
+function saveTransactionFromForm(){
+  const description=$("#financeDescription").value.trim();
+  const amount=Number($("#financeAmount").value);
+  if(!description||!amount||amount<=0){toast("Completá descripción y monto");return}
+  const data={
+    description,amount,
+    type:$("#financeType").value,
+    category:$("#financeCategory").value
+  };
+  if(financeEditingId){
+    const t=financeTransactions.find(x=>x.id===financeEditingId);
+    if(t)Object.assign(t,data);
+  }else{
+    financeTransactions.push({id:Date.now(),date:new Date().toISOString(),...data});
+  }
+  saveFinanceTransactions();renderTransactions();closeFinanceForm();
+  toast(financeEditingId?"Movimiento actualizado":"Movimiento agregado");
+}
+$("#addTransaction").onclick=()=>openFinanceForm();
+$("#cancelTransaction").onclick=closeFinanceForm;
+$("#saveTransaction").onclick=saveTransactionFromForm;
+
 function renderStats(){const vals=[60,75,82,68,90,78,100,72,84,92,70,88,95,82];$("#statsChart").innerHTML="";vals.forEach(v=>{const c=document.createElement("div");c.className="chart-col";c.innerHTML=`<div class="chart-bar" style="height:${v*2.2}px" title="${v}%"></div>`;$("#statsChart").appendChild(c)})}
-renderHabits();renderPlans();renderWorkout();renderHiit();renderStats();
+renderHabits();renderPlans();renderWorkout();renderHiit();renderTransactions();renderStats();
 </script>
 </body>
 </html>
