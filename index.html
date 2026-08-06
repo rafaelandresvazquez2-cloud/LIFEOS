@@ -635,5 +635,24 @@ $("#saveTransaction").onclick=saveTransactionFromForm;
 function renderStats(){const vals=[60,75,82,68,90,78,100,72,84,92,70,88,95,82];$("#statsChart").innerHTML="";vals.forEach(v=>{const c=document.createElement("div");c.className="chart-col";c.innerHTML=`<div class="chart-bar" style="height:${v*2.2}px" title="${v}%"></div>`;$("#statsChart").appendChild(c)})}
 renderHabits();renderPlans();renderWorkout();renderHiit();renderTransactions();renderStats();
 </script>
+  <script>
+function actualizarFechaLifeOS() {
+    const elementoFecha = document.getElementById("topEyebrow");
+
+    if (!elementoFecha) return;
+
+    const hoy = new Date();
+
+    const fecha = hoy.toLocaleDateString("es-AR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+    });
+
+    elementoFecha.textContent = fecha.toUpperCase();
+}
+
+actualizarFechaLifeOS();
+</script>
 </body>
 </html>
